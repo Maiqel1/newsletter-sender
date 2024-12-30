@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { newsletterTemplates } from "./templates";
 
@@ -10,6 +10,20 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+
+  // Load saved content when component mounts
+  useEffect(() => {
+    const savedContent = localStorage.getItem("newsletterDraft");
+    if (savedContent) {
+      setContent(savedContent);
+    }
+  }, []);
+
+  // Save content to localStorage whenever it changes
+  const handleEditorChange = (newContent) => {
+    setContent(newContent);
+    localStorage.setItem("newsletterDraft", newContent);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,10 +49,25 @@ export default function Home() {
 
       setStatus("Newsletter sent successfully!");
       setContent("");
+      // Clear the saved draft after successful send
+      localStorage.removeItem("newsletterDraft");
     } catch (error) {
       setStatus("Failed to send newsletter. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Add a function to clear draft
+  const clearDraft = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to clear the draft? This cannot be undone."
+      )
+    ) {
+      setContent("");
+      localStorage.removeItem("newsletterDraft");
+      setStatus("Draft cleared");
     }
   };
 
@@ -67,6 +96,13 @@ export default function Home() {
           >
             Preview
           </button>
+          <button
+            type='button'
+            onClick={clearDraft}
+            className='px-4 py-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200'
+          >
+            Clear Draft
+          </button>
         </div>
 
         {/* <select
@@ -93,7 +129,7 @@ export default function Home() {
               <Editor
                 apiKey='3k9ddu9t4qj7v6a1qtne4qhjt4fs94ftbedbkpyik3n01cy9'
                 value={content}
-                onEditorChange={(content) => setContent(content)}
+                onEditorChange={handleEditorChange}
                 init={{
                   height: 500,
                   menubar: true,
