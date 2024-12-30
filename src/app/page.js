@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <div className='min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-4xl mx-auto'>
-        <h1 className='text-3xl font-bold text-center mb-8'>
+        <h1 className='text-3xl font-bold text-center mb-8 text-gray-900'>
           Newsletter Sender
         </h1>
         <div className='flex gap-4 mb-4'>
@@ -82,7 +82,9 @@ export default function Home() {
             type='button'
             onClick={() => setShowPreview(false)}
             className={`px-4 py-2 rounded-lg ${
-              !showPreview ? "bg-blue-600 text-white" : "bg-gray-200"
+              !showPreview
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-800"
             }`}
           >
             Edit
@@ -91,7 +93,9 @@ export default function Home() {
             type='button'
             onClick={() => setShowPreview(true)}
             className={`px-4 py-2 rounded-lg ${
-              showPreview ? "bg-blue-600 text-white" : "bg-gray-200"
+              showPreview
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-800"
             }`}
           >
             Preview
