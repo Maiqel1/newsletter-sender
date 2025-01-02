@@ -11,7 +11,6 @@ export default function Home() {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("");
 
-  // Load saved content when component mounts
   useEffect(() => {
     const savedContent = localStorage.getItem("newsletterDraft");
     if (savedContent) {
@@ -19,7 +18,6 @@ export default function Home() {
     }
   }, []);
 
-  // Save content to localStorage whenever it changes
   const handleEditorChange = (newContent) => {
     setContent(newContent);
     localStorage.setItem("newsletterDraft", newContent);
@@ -49,7 +47,6 @@ export default function Home() {
 
       setStatus("Newsletter sent successfully!");
       setContent("");
-      // Clear the saved draft after successful send
       localStorage.removeItem("newsletterDraft");
     } catch (error) {
       setStatus("Failed to send newsletter. Please try again.");
@@ -58,7 +55,6 @@ export default function Home() {
     }
   };
 
-  // Add a function to clear draft
   const clearDraft = () => {
     if (
       window.confirm(
