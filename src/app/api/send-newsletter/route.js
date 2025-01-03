@@ -22,7 +22,7 @@ export async function POST(req) {
     const csvPath = path.join(
       process.cwd(),
       "data",
-      "newsletter-responses.csv"
+      "newsletter-responses2.csv"
     );
     const csvContent = await fs.readFile(csvPath, "utf-8");
     const records = parse(csvContent, {
@@ -60,7 +60,7 @@ export async function POST(req) {
         });
 
         sentCount++;
-        await delay(2000);
+        await delay(5000);
       } catch (error) {
         console.error(`Failed to send email to ${subscriber.email}:`, error);
         errorCount++;
@@ -91,6 +91,8 @@ export async function POST(req) {
       {
         success: true,
         message: `Newsletter sent successfully to ${sentCount} subscribers.`,
+        sentCount: sentCount,
+        totalSubscribers: subscribers.length,
       },
       { status: 200 }
     );

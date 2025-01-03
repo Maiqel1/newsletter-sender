@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import EmailStats from "./components/EmailStats";
 import { newsletterTemplates } from "./templates";
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [emailStats, setEmailStats] = useState(null);
 
   useEffect(() => {
     const savedContent = localStorage.getItem("newsletterDraft");
@@ -33,6 +35,7 @@ export default function Home() {
 
     setIsLoading(true);
     setStatus("Sending newsletter...");
+    setEmailStats(null);
 
     try {
       const response = await fetch("/api/send-newsletter", {
@@ -43,13 +46,38 @@ export default function Home() {
         body: JSON.stringify({ content }),
       });
 
-      if (!response.ok) throw new Error("Failed to send newsletter");
+      const data = await response.json();
 
-      setStatus("Newsletter sent successfully!");
-      setContent("");
-      localStorage.removeItem("newsletterDraft");
+      if (!response.ok)
+        throw new Error(data.error || "Failed to send newsletter");
+
+      if (response.status === 207) {
+        setStatus("Newsletter sent with some errors");
+        setEmailStats({
+          sentCount: data.sentCount,
+          errorCount: data.errorCount,
+          errors: data.errors,
+          totalSubscribers: data.sentCount + data.errorCount,
+        });
+      } else {
+        setStatus("Newsletter sent successfully!");
+        setEmailStats({
+          sentCount: data.sentCount || 0,
+          errorCount: 0,
+          errors: [],
+          totalSubscribers: data.sentCount || 0,
+        });
+        setContent("");
+        localStorage.removeItem("newsletterDraft");
+      }
     } catch (error) {
       setStatus("Failed to send newsletter. Please try again.");
+      setEmailStats({
+        sentCount: 0,
+        errorCount: 1,
+        errors: [{ email: "System Error", error: error.message }],
+        totalSubscribers: 0,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -244,6 +272,8 @@ export default function Home() {
             </div>
           </div>
         </form>
+
+        <EmailStats stats={emailStats} isLoading={isLoading} />
       </div>
     </div>
   );
