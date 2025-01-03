@@ -22,7 +22,7 @@ export async function POST(req) {
     const csvPath = path.join(
       process.cwd(),
       "data",
-      "newsletter-responses2.csv"
+      "newsletter-responses.csv"
     );
     const csvContent = await fs.readFile(csvPath, "utf-8");
     const records = parse(csvContent, {
@@ -53,7 +53,7 @@ export async function POST(req) {
             transporter.sendMail({
               from: process.env.FROM_EMAIL,
               to: subscriber.email,
-              subject: "Newsletter Update",
+              subject: "Stories by Riri",
               html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                   <p>Hello ${subscriber.name},</p>
