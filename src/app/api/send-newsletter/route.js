@@ -22,7 +22,7 @@ export async function POST(req) {
     const csvPath = path.join(
       process.cwd(),
       "data",
-      "newsletter-responses2.csv"
+      "newsletter-responses.csv"
     );
     const csvContent = await fs.readFile(csvPath, "utf-8");
     const records = parse(csvContent, {
