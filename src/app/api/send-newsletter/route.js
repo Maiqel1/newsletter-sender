@@ -42,14 +42,10 @@ export async function POST(req) {
     let errorCount = 0;
     const errors = [];
 
-    for (const subscriber of subscribers) {
-      const personalizedContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <p>Hello ${subscriber.name},</p>
-          <p class="mt-3">${content}</p>
-           
-        </div>
-      `;
+    const batchSize = 10;
+
+    for (let i = 0; i < subscribers.length; i += batchSize) {
+      const batch = subscribers.slice(i, i + batchSize);
 
       try {
         await Promise.all(
@@ -68,15 +64,14 @@ export async function POST(req) {
           )
         );
         sentCount += batch.length;
-        // await delay(5000);
       } catch (error) {
-        console.error(`Failed to send email to ${subscriber.email}:`, error);
         console.error("Batch error:", error);
         errorCount += batch.length;
-        // errorCount++;
-        errors.push({
-          email: subscriber.email,
-          error: error instanceof Error ? error.message : String(error),
+        batch.forEach((subscriber) => {
+          errors.push({
+            email: subscriber.email,
+            error: error instanceof Error ? error.message : String(error),
+          });
         });
 
         if (errorCount > 5) {
